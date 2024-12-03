@@ -9,9 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileWriter;
+import java.util.ArrayList;
+
 
 /**
  * Write a description of JavaFX class HabitTracker here.
@@ -19,9 +18,11 @@ import java.io.FileWriter;
  * @authors: Izad Khokhar and Christian Harrison
  * @version (a version number or a date)
  */
-public class HabitTracker extends Application
+public class ListPage extends Application
 {
-    // Label and Buttons moved here so the methods can interact without throwing errors.
+    //
+    // Ideally, the HabitTracker class is the master controller, and the two pane views (the habit listing and streak calendar) are separate
+    //
     private int count = 0;
     private Label myLabel = new Label("0");
     Button habitCompleted = new Button("Complete!");
@@ -37,43 +38,29 @@ public class HabitTracker extends Application
     @Override
     public void start(Stage stage)
     {
-        // Habit Example
+        // Create a Button or any control item
         
         Label myHabit = new Label("Habit Habit Bahit");
-        
-        //File 
-        try {
-          File myObj = new File("record.txt");
-          if (myObj.createNewFile()) {
-              myLabel.setText("File created successfully.");
-          } else {
-              myLabel.setText("File already exists.");
-          }
-        } catch (IOException e) {
-          System.out.println("An error occurred.");
-          e.printStackTrace();
-        }
-        
-        // Create master pane
-        GridPane pane = new GridPane();
-        pane.setPadding(new Insets(10, 10, 10, 10));
-        pane.setMinSize(300, 300);
-        pane.setVgap(10);
-        pane.setHgap(10);
+        // Create a new grid pane
+        GridPane habitList = new GridPane();
+        habitList.setPadding(new Insets(10, 10, 10, 10));
+        habitList.setMinSize(300, 300);
+        habitList.setVgap(10);
+        habitList.setHgap(10);
 
-        //Button Actions
+        //set an action on the button using method reference
         habitCompleted.setOnAction(this::complete);
         habitFailed.setOnAction(this::incomplete);
         
-        // Add incompleted and completed, along with counter for debug
-        pane.add(myHabit, 1, 0);
-        pane.add(myLabel, 3, 0);
-        pane.add(habitFailed, 0, 0);
-        pane.add(habitCompleted, 2, 0);
+        // Add the button and label into the pane
+        habitList.add(myHabit, 1, 0);
+        habitList.add(myLabel, 3, 0);
+        habitList.add(habitFailed, 0, 0);
+        habitList.add(habitCompleted, 2, 0);
 
         // JavaFX must have a Scene (window content) inside a Stage (window)
-        Scene scene = new Scene(pane, 300,100);
-        stage.setTitle("JavaFX Example");
+        Scene scene = new Scene(habitList, 300,100);
+        stage.setTitle("Habit Listing");
         stage.setScene(scene);
 
         // Show the Stage (window)
@@ -86,33 +73,19 @@ public class HabitTracker extends Application
      */
     private void complete(ActionEvent event)
     {
-        // Increments count and disables buttons
+        // Counts number of button clicks and shows the result on a label
         count = count + 1;
         myLabel.setText(Integer.toString(count));
         habitCompleted.setDisable(true);
         habitFailed.setDisable(true);
-        writeTo("record.txt", myLabel.getText());
     }
     
     private void incomplete(ActionEvent event)
     {
-        // Decrements count and disables buttons
+        // Counts number of button clicks and shows the result on a label
         count = count - 1;
         myLabel.setText(Integer.toString(count));
         habitCompleted.setDisable(true);
         habitFailed.setDisable(true);
-        writeTo("record.txt", myLabel.getText());
-    }
-    
-    private void writeTo(String file, String value){
-        try {
-          FileWriter myWriter = new FileWriter(file);
-          myWriter.write(value);
-          myWriter.close();
-          System.out.println("Successfully wrote to the file.");
-        } catch (IOException e) {
-          System.out.println("An error occurred.");
-          e.printStackTrace();
-        }
     }
 }
