@@ -53,7 +53,7 @@ public class VisualPage extends Application
         habitCalendar.setHgap(10);
 
         //Create file object
-        File habits = new File("record.txt");
+        File habits = new File("habits.txt");
         
         //Read from file, add to visuals ArrayList, set color for each rectangle
         fileRead(habits, habitCalendar);

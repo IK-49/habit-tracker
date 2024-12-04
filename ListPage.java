@@ -53,10 +53,10 @@ public class ListPage extends Application
         habitFailed.setOnAction(this::incomplete);
         
         // Add the button and label into the pane
-        habitList.add(myHabit, 1, 0);
-        habitList.add(myLabel, 3, 0);
+        habitList.add(myHabit, 0, 1);
+        habitList.add(myLabel, 0, 3);
         habitList.add(habitFailed, 0, 0);
-        habitList.add(habitCompleted, 2, 0);
+        habitList.add(habitCompleted, 0, 2);
 
         // JavaFX must have a Scene (window content) inside a Stage (window)
         Scene scene = new Scene(habitList, 300,100);
