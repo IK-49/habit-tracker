@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import java.io.*;
 import java.util.ArrayList;
 import java.time.*;
+import java.util.Scanner;
 
 public class HabitTracker extends Application {
 
@@ -29,7 +30,9 @@ public class HabitTracker extends Application {
 
         // Read all the habits that are in the file
         ArrayList<String> habits = loadHabitsFromFile("habits.txt");
-
+        ArrayList<String> dates = loadDatesFromFile("habits.txt");
+        
+        
         // GridPane will be used to display each habit
         GridPane habitGrid = new GridPane();
         habitGrid.setVgap(10);
@@ -38,10 +41,10 @@ public class HabitTracker extends Application {
         // Iterates through each habit
         for (int i = 0; i < habits.size(); i++) {
             String habit = habits.get(i);
-
+            
             CheckBox checkBox = new CheckBox(habit);
-
-            Label streak = new Label("Streak: (streak goes here)");
+            
+            Label streak = new Label("Streak: "+dates.get(i));
 
             habitGrid.add(checkBox, 0, i);
             habitGrid.add(streak, 1, i);
@@ -73,7 +76,7 @@ public class HabitTracker extends Application {
 
         layout.getChildren().addAll(habitGrid, inputArea);
 
-        Scene scene = new Scene(layout, 300, 400);
+        Scene scene = new Scene(layout, 500, 400);
         stage.setTitle("Habit Tracker");
         stage.setScene(scene);
         stage.show();
@@ -82,16 +85,37 @@ public class HabitTracker extends Application {
     private ArrayList<String> loadHabitsFromFile(String fileName) 
     {
         ArrayList<String> habits = new ArrayList<>();
+        
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) 
             {
-                habits.add(line.trim()); // Adds each individual line in habits.txt to the habits ArrayList
+                Scanner s = new Scanner(line.trim());
+                s.useDelimiter("\"");
+                habits.add(s.next()); // Adds each habit name in habits.txt to the habits ArrayList
             }
         } catch (IOException e) {
             System.out.println(e.getMessage()); // Error while loading habits
         }
         return habits;
+    }
+    
+    private ArrayList<String> loadDatesFromFile(String fileName) 
+    {
+        ArrayList<String> streaks = new ArrayList<>();
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) 
+            {
+                Scanner s = new Scanner(line.trim());
+                s.useDelimiter("$");
+                streaks.add(s.next()); // Adds each individual date in habits.txt to the streaks ArrayList
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage()); // Error while loading habits
+        }
+        return streaks;
     }
 
     private void writeHabitsToFile(String fileName, ArrayList<String> habits) {
@@ -99,7 +123,7 @@ public class HabitTracker extends Application {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             for (String habit : habits) // Write the habit from the habit text field to the file
             {
-                writer.write(habit);
+                writer.write(habit + " " + creationDate);
                 writer.newLine();
             }
         } catch (IOException e) {
