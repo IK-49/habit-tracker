@@ -1,5 +1,5 @@
-"Take a shower (CS Major: Impossible)" $2024-12-05$ 
-"Drink Water" $2024-12-05$ 
-"Test" $2024-12-05$ 
-"TestingToo" $2024-12-05$ 
-"TestingTres" $2024-12-05$ 
+"Take a shower (CS Major: Impossible)" "2024-12-01" 
+"Drink Water" "2024-12-02"
+"Test" "2024-12-03" 
+"TestingToo" "2024-12-04" 
+"TestingTres" "2024-12-05" 
