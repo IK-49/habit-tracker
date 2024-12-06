@@ -34,7 +34,11 @@ public class HabitTracker extends Application {
 
         // Read all the habits that are in the file
         ArrayList<String> habits = loadHabitsFromFile("habits.txt");
-        ArrayList<Long> streaks = loadStreakFromFile("habits.txt");
+        ArrayList<String> dates = loadDatesFromFile("habits.txt");
+        ArrayList<String> streaks = loadStreaksFromFile("habits.txt");
+        
+        ArrayList<CheckBox> checkboxes = new ArrayList<CheckBox>();
+        
         
         
         // GridPane will be used to display each habit
@@ -46,19 +50,17 @@ public class HabitTracker extends Application {
         for (int i = 0; i < habits.size(); i++) {
             String habit = habits.get(i);
             
-            CheckBox checkBox = new CheckBox(habit);
+            checkboxes.add(new CheckBox(habit));
             
             Label streak = new Label("Streak: "+streaks.get(i));
-            System.out.println(streak.getText());
 
-            habitGrid.add(checkBox, 0, i);
+            habitGrid.add(checkboxes.get(i), 0, i);
             habitGrid.add(streak, 1, i);
         }
 
         // Habit entry field
         TextField newHabitField = new TextField();
         newHabitField.setPromptText("Enter a new habit");
-
         
         Button addHabitButton = new Button("Add Habit");
         addHabitButton.setOnAction(event -> {
@@ -77,10 +79,20 @@ public class HabitTracker extends Application {
                 newHabitField.clear();
             }
         });
+        
+        Button confirmChecked = new Button("Confirm?");
+        addHabitButton.setOnAction(event -> {
+            for(int i = 0; i < checkboxes.size(); i++){
+                if(checkboxes.get(i).isSelected()){
+                    updateStreak("habits.text", habits, streaks, dates, i, 1);
+                }
+            }
+        });
 
         HBox inputArea = new HBox(10, newHabitField, addHabitButton);
+        HBox confirm = new HBox(10, confirmChecked);
 
-        layout.getChildren().addAll(habitGrid, inputArea);
+        layout.getChildren().addAll(habitGrid, inputArea, confirm);
 
         Scene scene = new Scene(layout, 500, 400);
         stage.setTitle("Habit Tracker");
@@ -107,9 +119,9 @@ public class HabitTracker extends Application {
         return habits;
     }
     
-    private ArrayList<Long> loadStreakFromFile(String fileName) 
+    private ArrayList<String> loadStreaksFromFile(String fileName) 
     {
-        ArrayList<Long> streaks = new ArrayList<>();
+        ArrayList<String> streaks = new ArrayList<>();
         
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -118,27 +130,71 @@ public class HabitTracker extends Application {
                 Scanner s = new Scanner(line.trim());
                 s.useDelimiter("\"");
                 s.next(); s.next();
+                streaks.add(s.next()); // Adds each habit name in habits.txt to the habits ArrayList
+                s.close();
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage()); // Error while loading habits
+        }
+        return streaks;
+    }
+
+    private ArrayList<String> loadDatesFromFile(String fileName){
+        ArrayList<String> dates = new ArrayList<>();
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) 
+            {
+                Scanner s = new Scanner(line.trim());
+                s.useDelimiter("\"");
+                s.next();
                 String date = s.next();
-                System.out.println(date);
                 
                 s.close();
-                streaks.add(stringToDate(date));// Adds each individual streak in habits.txt to the streaks ArrayList
+                dates.add(date);// Adds each individual streak in habits.txt to the streaks ArrayList
             }
         } catch (IOException e) {
             System.out.println(e.getMessage()); // Error while loading habits
         }
         
-        return streaks;
+        return dates;
     }
-
+    
     private void writeHabitsToFile(String fileName, String habit) {
         LocalDate creationDate = LocalDate.now();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
-            writer.write("\""+habit+"\"" + " " + "\""+creationDate+"\"");
+            writer.write("\""+habit+"\""+creationDate+"\"");
             writer.newLine();
         } catch (IOException e) {
             System.out.println(e.getMessage()); // Error while loading habits
         }
+    }
+    
+    private void updateStreak(String fileName, ArrayList<String> habits, ArrayList<String> streaks, ArrayList<String> dates, int lineNumber, int streakDelta){
+        
+        ArrayList<String> fileContent = new ArrayList<>();
+        int j = 0;
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) 
+            {
+                j+=1;
+                fileContent.add(line);
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage()); // Error while loading habits
+        }
+        
+        String targetLine = "\""+habits.get(j)+"\""+dates.get(j)+"\""+streaks.get(j)+"\"";
+        
+        for (int i = 0; i < fileContent.size(); i++) {
+            if (fileContent.get(i).equals(targetLine)) {
+                fileContent.set(i, "\""+habits.get(j)+"\""+dates.get(j)+"\""+streaks.set(j, streaks.get(j)+streakDelta));
+            }
+        }
+
+        
     }
     
     private long stringToDate(String date){
