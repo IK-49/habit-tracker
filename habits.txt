@@ -1,5 +1,6 @@
-Test,0
-Take Shower,0
-Eat,8
-Test2ElectricBoogaloo,0
-FailEveryDay,0
+Test,15
+Take Shower,22
+Eat,9
+Test2ElectricBoogaloo,6
+FailEveryDay,57
+nvdasbkcv,1

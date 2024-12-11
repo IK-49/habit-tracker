@@ -7,6 +7,8 @@ import javafx.geometry.Insets;
 import java.io.*;
 import java.time.*;
 import java.util.*;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 
 public class HabitTracker extends Application {
     private static final String FILE_NAME = "habits.txt";
@@ -23,27 +25,58 @@ public class HabitTracker extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage primaryStage) throws Exception {
+        //habitList
         initializeApp();
 
+        //habitVisual
+        GridPane habitCalendar = new GridPane();
+        ScrollPane scroller = new ScrollPane();
+        scroller.setContent(habitCalendar);
+        habitCalendar.setPadding(new Insets(10, 10, 10, 10));
+        habitCalendar.setMinSize(300, 300);
+        habitCalendar.setVgap(10);
+        habitCalendar.setHgap(10);
+        
+        Scene habitList = new Scene(layout, 500, 400);
+        Scene habitVisual = new Scene(scroller, 550, 500);
+        
+        Button habitListButton = new Button("Back to List");
+        habitListButton.setOnAction(event -> primaryStage.setScene(habitList));
+        
+        Button habitVisualButton = new Button("Habit Visual");
+        habitVisualButton.setOnAction(event -> primaryStage.setScene(habitVisual));
+        
         Button addHabitButton = new Button("Add Habit");
         addHabitButton.setOnAction(event -> addHabit());
 
         Button confirmChecked = new Button("Confirm Habits for Today");
         confirmChecked.setOnAction(event -> confirmHabits());
 
+        HBox backButton = new HBox(10, habitListButton);
         HBox inputArea = new HBox(10, newHabitField, addHabitButton);
-        HBox confirmArea = new HBox(10, confirmChecked);
+        HBox confirmArea = new HBox(10, confirmChecked, habitVisualButton);
 
         layout.getChildren().addAll(habitGrid, confirmArea, inputArea);
         layout.setPadding(new Insets(10));
+        
+        habitCalendar.add(habitListButton, 0, 0);
 
-        Scene scene = new Scene(layout, 500, 400);
-        stage.setTitle("Habit Tracker");
-        stage.setScene(scene);
-        stage.show();
+        //Gather rectangles
+        streaksVisual(habitCalendar);
+        //
+        
+        primaryStage.setTitle("Habit Tracker");
+        primaryStage.setScene(habitList);
+        primaryStage.show();
+        
     }
-
+    
+    
+    private void switchScene(Scene scene){
+        
+    }
+    
     private void initializeApp() {
         loadHabitsFromFile();
         displayHabits();
@@ -164,5 +197,41 @@ public class HabitTracker extends Application {
         return daysBetween;
     }
     */
+   public void streaksVisual(GridPane habitCalendar) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            int lineNumber = 1; //Stores row value
+            int returnNumber = 0; //Multiplier for carriage returns
+            Color fillColor = Color.GREEN;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                int streak = Integer.parseInt(parts[1]);
+                
+                habitCalendar.add(new Label(parts[0]), 0, lineNumber); //Habit name
+                if(streak > 0){
+                    for(int i = 0; i < streak; i++){
+                        //Determines Color
+                        if((i+1)%7 == 0 && i >=6){
+                            fillColor = Color.BLUE; //Every 7 days of keeping up is blue
+                        } else {
+                            fillColor = Color.GREEN;
+                        }
+                        
+                        //Carriage Return
+                        if((i+1) > 7 && (i+1)%7 == 1) {
+                            lineNumber++; //Newline
+                            returnNumber++; //Pull rectangles back to index 0 visually
+                        } 
+                        
+                        habitCalendar.add(new Rectangle(40, 40, fillColor), i+1-(returnNumber*7), lineNumber);
+                    }
+                }
+                lineNumber++; //New Habit line
+                returnNumber = 0; //No returns yet for new habit
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
     
