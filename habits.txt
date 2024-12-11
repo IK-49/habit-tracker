@@ -1,11 +1,4 @@
-"Take a shower (CS Major: Impossible)"2024-12-01"5"
-"hahahah"2024-12-02"14"
-"fasdfdasf"2024-16-09"11"
-"fadsfadsfdsa"2024-12-09"5"
-"IMDABEST"2026-12-09"2"
-"test"2024-12-09"0"
-"nexthabit"2024-12-09"0"
-"test"2024-12-09"0"
-"next"2024-12-09"0"
-"teetaststa"2024-12-09"0"
-"nice"2024-12-09"0"
+Next Habit,0
+Test,0
+Take Shower,1
+Eat,1
