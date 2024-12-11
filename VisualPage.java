@@ -1,21 +1,14 @@
-
-
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Scanner;
-import javafx.scene.shape.*;
+import javafx.geometry.Insets;
+import java.io.*;
+import java.time.*;
+import java.util.*;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 
 /**
  * Write a description of JavaFX class VisualPage here.
@@ -26,10 +19,8 @@ import java.util.ArrayList;
 public class VisualPage extends Application
 {
     // We keep track of the count, and label displaying the count:
-    
-    ArrayList<Rectangle> visuals = new ArrayList<>(); //Stores rectangles
-    Label debug1 = new Label();
-    Label debug2 = new Label();
+    private final String FILE_NAME = "habits.txt";
+    private final ArrayList<Rectangle> visuals = new ArrayList<>(); //Stores rectangles
     
     /**
      * The start method is the main entry point for every JavaFX application. 
@@ -38,37 +29,31 @@ public class VisualPage extends Application
      *
      * @param  stage the primary stage for this application.
      */
+    
+    public static void main(String args[]){
+        launch(args);
+    }
+    
     @Override
     public void start(Stage stage)
     {
         // Create a Button or any control item
-        Button test = new Button();
+        Button back = new Button();
         
         
         // Create a new grid pane
         GridPane habitCalendar = new GridPane();
+        ScrollPane scroller = new ScrollPane();
+        scroller.setContent(habitCalendar);
         habitCalendar.setPadding(new Insets(10, 10, 10, 10));
         habitCalendar.setMinSize(300, 300);
         habitCalendar.setVgap(10);
         habitCalendar.setHgap(10);
-
-        //Create file object
-        File habits = new File("habits.txt");
         
-        //Read from file, add to visuals ArrayList, set color for each rectangle
-        fileRead(habits, habitCalendar);
-        
-        //Add rectangles to scene
-        for(int i = 0; i < visuals.size(); i++){
-            habitCalendar.add(visuals.get(i), i, 0);
-        }
-        
-        //Debug labels
-        habitCalendar.add(debug1, 0, 1);
-        habitCalendar.add(debug2, 0, 2);
-        
-        // JavaFX must have a Scene (window content) inside a Stage (window)
-        Scene scene = new Scene(habitCalendar, 1000,500);
+        //Gather rectangles
+        streaksVisual(habitCalendar); 
+                        
+        Scene scene = new Scene(scroller, 550,500);
         stage.setTitle("Visual Test");
         stage.setScene(scene);
 
@@ -76,48 +61,41 @@ public class VisualPage extends Application
         stage.show();
     }
     
-      public boolean fileRead(File file, GridPane pane) {
-        try {
-            // If file exists, continue
-            if (!file.exists()) {
-                System.out.println("File not found.");
-                return false;
-            }
-            
-            //Create scanner
-            Scanner reader = new Scanner(file);
-            
-            // [---------------------------
-            //String will store file content
-            String content = "";
-            
-            //Add to content
-            while(reader.hasNext()){
-                content += reader.next();
-            }
-            // ----------------------------]
-            //This doesn't make a ton of sense, essentially storing the entire file in memory.
-            //It will need to be optimized. For now, though, it works.
-            
-            debug1.setText("File Content: \n" + content);
-            
-            //Create array of tokens
-            String[] tokens = content.split("&");
-            
-            // Change each Rectangle as needed
-            for(int i = 0; i < tokens.length; i++){
-                visuals.add(new Rectangle(80, 80, Color.RED)); //Assume incomplete
-                if (Integer.valueOf(tokens[i]) > 0) { //Conditional for testing
-                    visuals.get(i).setFill(Color.GREEN);
+    public void streaksVisual(GridPane habitCalendar) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            int lineNumber = 0; //Stores row value
+            int returnNumber = 0; //Multiplier for carriage returns
+            Color fillColor = Color.GREEN;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                int streak = Integer.parseInt(parts[1]);
+                
+                habitCalendar.add(new Label(parts[0]), 0, lineNumber); //Habit name
+                if(streak > 0){
+                    for(int i = 0; i < streak; i++){
+                        //Determines Color
+                        if((i+1)%7 == 0 && i >=6){
+                            fillColor = Color.BLUE; //Every 7 days of keeping up is blue
+                        } else {
+                            fillColor = Color.GREEN;
+                        }
+                        
+                        //Carriage Return
+                        if((i+1) > 7 && (i+1)%7 == 1) {
+                            lineNumber++; //Newline
+                            returnNumber++; //Pull rectangles back to index 0 visually
+                        } 
+                        
+                        habitCalendar.add(new Rectangle(40, 40, fillColor), i+1-(returnNumber*7), lineNumber);
+                    }
                 }
-                System.out.println(i); //Debug
+                lineNumber++; //New Habit line
+                returnNumber = 0; //No returns yet for new habit
             }
-
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
-
-        return false;
     }
 
 }

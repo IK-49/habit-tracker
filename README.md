@@ -4,9 +4,9 @@ Tell the reader (someone who does not know anything about this project)
 all they need to know. The comments should usually include at least:
 ------------------------------------------------------------------------
 
-PROJECT TITLE:
-PURPOSE OF PROJECT:
-VERSION or DATE:
-HOW TO START THIS PROJECT:
-AUTHORS:
-USER INSTRUCTIONS:
+PROJECT TITLE: Habit Tracker
+PURPOSE OF PROJECT: NCSSM Final Assessment
+VERSION or DATE: 12/11/2024
+HOW TO START THIS PROJECT: 
+AUTHORS: Izad Khokar and Christian Harrison
+USER INSTRUCTIONS: 

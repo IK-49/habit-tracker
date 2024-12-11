@@ -1,4 +1,5 @@
-Next Habit,0
 Test,0
-Take Shower,1
-Eat,1
+Take Shower,0
+Eat,8
+Test2ElectricBoogaloo,0
+FailEveryDay,0
