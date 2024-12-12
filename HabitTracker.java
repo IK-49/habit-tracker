@@ -55,9 +55,10 @@ public class HabitTracker extends Application {
 
         // Button to switch to the habit visual view
         Button habitVisualButton = new Button("Habit Visual");
+        //Rebuild visual representation & change Scene
         habitVisualButton.setOnAction(new EventHandler <ActionEvent>(){
             public void handle(ActionEvent event){
-                streaksVisual(habitCalendar, habitListButton); //Update visual each time
+                streaksVisual(habitCalendar, habitListButton);
                 primaryStage.setScene(habitVisual);
             }
         });
@@ -65,8 +66,6 @@ public class HabitTracker extends Application {
         // Button to add a new habit
         Button addHabitButton = new Button("Add Habit");
         addHabitButton.setOnAction(event -> addHabit());
-        
-        
 
         // Button to confirm habits for today
         Button confirmChecked = new Button("Confirm Habits for Today");
