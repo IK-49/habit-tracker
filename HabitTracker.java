@@ -19,6 +19,7 @@ public class HabitTracker extends Application {
     private final TextField newHabitField = new TextField();
     private final GridPane habitGrid = new GridPane();
     private final VBox layout = new VBox(10);
+    private final ArrayList<LocalDate> lastConfirmed = new ArrayList<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -72,16 +73,15 @@ public class HabitTracker extends Application {
         
     }
     
-    
-    private void switchScene(Scene scene){
-        
-    }
-    
     private void initializeApp() {
         loadHabitsFromFile();
         displayHabits();
         newHabitField.setPromptText("Enter a new habit");
 
+        for (int i = 0; i < habits.size(); i++) {
+            lastConfirmed.add(LocalDate.MIN); // 1970 date / default
+        }
+        
         habitGrid.setVgap(10);
         habitGrid.setHgap(20);
     }
@@ -91,16 +91,33 @@ public class HabitTracker extends Application {
         if (!newHabit.isEmpty()) {
             habits.add(newHabit);
             streaks.add(0);
+            lastConfirmed.add(LocalDate.MIN); 
             saveAllHabitsToFile();
             newHabitField.clear();
             displayHabits();
         }
     }
 
+
+
     private void confirmHabits() {
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Confirm Habits");
+        confirmationAlert.setHeaderText("Are you sure you want to confirm today's habits?");
+        confirmationAlert.setContentText("This action cannot be undone.");
+        
+        Optional<ButtonType> result = confirmationAlert.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return; // if user cancels, then return
+        }
+    
+        LocalDate today = LocalDate.now();
         for (int i = 0; i < checkboxes.size(); i++) {
             if (checkboxes.get(i).isSelected()) {
-                streaks.set(i, streaks.get(i) + 1);
+                if (!lastConfirmed.get(i).equals(today)) {
+                    streaks.set(i, streaks.get(i) + 1);
+                    lastConfirmed.set(i, today);
+                }
             } else {
                 streaks.set(i, 0);
             }
@@ -138,17 +155,20 @@ public class HabitTracker extends Application {
         saveAllHabitsToFile();
     }
 
-    private void loadHabitsFromFile() {
+    private void loadHabitsFromFile() 
+    {
         habits.clear();
         streaks.clear();
-
+        lastConfirmed.clear();
+    
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 2) {
+                if (parts.length == 3) { // Adjust for date field
                     habits.add(parts[0].trim());
                     streaks.add(Integer.parseInt(parts[1].trim()));
+                    lastConfirmed.add(LocalDate.parse(parts[2].trim()));
                 }
             }
         } catch (IOException e) {
@@ -159,44 +179,14 @@ public class HabitTracker extends Application {
     private void saveAllHabitsToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (int i = 0; i < habits.size(); i++) {
-                writer.write(habits.get(i) + "," + streaks.get(i));
+                writer.write(habits.get(i) + "," + streaks.get(i) + "," + lastConfirmed.get(i));
                 writer.newLine();
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-    }
-    
-    // i'm going to be redoing the streak system; not sure if we need this but i'll keep it here anyways
-      /*
-    private String stringToStreak(String date){
-        System.out.println("date: "+date);    
-            
-        // Define the date format
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
-        if(date.equals("")){
-            return "0";
-        }
+    }   
 
-        // Parse the input string into a LocalDate
-        LocalDate inputDate = LocalDate.parse(date.trim(), formatter);
-
-
-
-
-        // Get the current date
-        LocalDate currentDate = LocalDate.now();
-
-
-        // Calculate the difference in days
-        String daysBetween = String.valueOf(ChronoUnit.DAYS.between(inputDate, currentDate));
-        
-        // Print the result
-        
-        return daysBetween;
-    }
-    */
    public void streaksVisual(GridPane habitCalendar) {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;

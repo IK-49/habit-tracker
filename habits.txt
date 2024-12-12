@@ -1,6 +1,5 @@
-Test,15
-Take Shower,22
-Eat,9
-Test2ElectricBoogaloo,6
-FailEveryDay,57
-nvdasbkcv,1
+Habit 1,1,2024-12-11
+Habit 2,0,2024-12-11
+Habit 3,1,2024-12-11
+Habit 4,0,2024-12-11
+Habit 5,0,2024-12-11
