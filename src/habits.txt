@@ -1,5 +1,0 @@
-Take a Shower,33,2024-12-12
-Eat Breakfast,14,2024-12-12
-Drink Water,49,2024-12-11
-Learn a new language,2,2024-12-12
-30 mintues of programming,9,2024-12-11

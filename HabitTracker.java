@@ -9,6 +9,7 @@ import java.time.*;
 import java.util.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
+import javafx.event.*;
 
 public class HabitTracker extends Application {
     // File to store habit data
@@ -42,7 +43,7 @@ public class HabitTracker extends Application {
         habitCalendar.setHgap(10);
 
         Scene habitList = new Scene(layout, 500, 400);
-        Scene habitVisual = new Scene(scroller, 550, 500);
+        Scene habitVisual = new Scene(scroller, 550, 400);
 
         // Button to navigate back to the list view
         Button habitListButton = new Button("Back to List");
@@ -52,7 +53,12 @@ public class HabitTracker extends Application {
 
         // Button to switch to the habit visual view
         Button habitVisualButton = new Button("Habit Visual");
-        habitVisualButton.setOnAction(event -> primaryStage.setScene(habitVisual));
+        habitVisualButton.setOnAction(new EventHandler <ActionEvent>(){
+            public void handle(ActionEvent event){
+                streaksVisual(habitCalendar, habitListButton); //Update visual each time
+                primaryStage.setScene(habitVisual);
+            }
+        });
 
         // Button to add a new habit
         Button addHabitButton = new Button("Add Habit");
@@ -77,7 +83,7 @@ public class HabitTracker extends Application {
         primaryStage.setScene(habitList);
         primaryStage.show();
     }
-
+    
     private void initializeApp() {
         // Load saved habits and set up initial UI
         loadHabitsFromFile();
@@ -109,6 +115,7 @@ public class HabitTracker extends Application {
 
     private void confirmHabits() {
         // Alert for user confirmation
+        
         Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmationAlert.setTitle("Confirm Habits");
         confirmationAlert.setHeaderText("Are you sure you want to confirm today's habits?");
@@ -118,13 +125,13 @@ public class HabitTracker extends Application {
         if (result.isEmpty() || result.get() != ButtonType.OK) {
             return; // Exit if the user cancels
         }
-
+        
         LocalDate today = LocalDate.now();
         for (int i = 0; i < checkboxes.size(); i++) {
             if (checkboxes.get(i).isSelected()) {
                 // Update streak if habit is not yet confirmed today
                 if (!lastConfirmed.get(i).equals(today)) {
-                    streaks.set(i, streaks.get(i) + 1);
+                    streaks.set(i, (streaks.get(i)+1));
                     lastConfirmed.set(i, today);
                 }
             } else {
