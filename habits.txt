@@ -2,4 +2,4 @@ Take a Shower,14,2024-12-12
 Eat Breakfast,34,2024-12-12
 Drink Water,56,2024-12-12
 Learn a new language,2,2024-12-12
-Feed The Cat,1,2024-12-12
+Feed the Cat,1,2024-12-12

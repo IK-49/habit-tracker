@@ -23,6 +23,8 @@ public class HabitTracker extends Application {
     private final GridPane habitGrid = new GridPane();
     private final VBox layout = new VBox(10);
     private final ArrayList<LocalDate> lastConfirmed = new ArrayList<>();
+    
+    Label error = new Label("");
 
     public static void main(String[] args) {
         launch(args);
@@ -63,6 +65,8 @@ public class HabitTracker extends Application {
         // Button to add a new habit
         Button addHabitButton = new Button("Add Habit");
         addHabitButton.setOnAction(event -> addHabit());
+        
+        
 
         // Button to confirm habits for today
         Button confirmChecked = new Button("Confirm Habits for Today");
@@ -72,8 +76,9 @@ public class HabitTracker extends Application {
         HBox backButton = new HBox(10, habitListButton);
         HBox inputArea = new HBox(10, newHabitField, addHabitButton);
         HBox confirmArea = new HBox(10, confirmChecked, habitVisualButton);
+        HBox errorCatch = new HBox(10, error);
 
-        layout.getChildren().addAll(habitGrid, confirmArea, inputArea);
+        layout.getChildren().addAll(habitGrid, confirmArea, inputArea, errorCatch);
         layout.setPadding(new Insets(10));
 
         // Generate streaks visual and link navigation
@@ -89,7 +94,7 @@ public class HabitTracker extends Application {
         loadHabitsFromFile();
         displayHabits();
         newHabitField.setPromptText("Enter a new habit");
-
+        
         // Ensure lastConfirmed list aligns with habit size
         while (lastConfirmed.size() < habits.size()) {
             lastConfirmed.add(LocalDate.MIN);
@@ -102,7 +107,8 @@ public class HabitTracker extends Application {
 
     private void addHabit() {
         String newHabit = newHabitField.getText().trim();
-        if (!newHabit.isEmpty()) {
+        
+        if (!newHabit.isEmpty() && !newHabit.contains(",")) {
             // Add new habit to the lists and reset its streak and confirmation date
             habits.add(newHabit);
             streaks.add(0);
@@ -110,6 +116,10 @@ public class HabitTracker extends Application {
             saveAllHabitsToFile();
             newHabitField.clear();
             displayHabits();
+            error.setText("");
+        }
+        if(newHabit.contains(",")){
+            error.setText("You cannot include commas in your habit name");
         }
     }
 
